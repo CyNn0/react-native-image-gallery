@@ -4,7 +4,8 @@ import {
     FlatList,
     ViewPropTypes,
     InteractionManager,
-    Dimensions
+    Dimensions,
+    Platform
 } from 'react-native';
 import PropTypes from 'prop-types';
 import Scroller from '../Scroller';
@@ -108,7 +109,7 @@ export default class ViewPager extends PureComponent {
 
         const finalX = this.getScrollOffsetOfPage(page);
         this.scroller.startScroll(this.scroller.getCurrX(), 0, finalX - this.scroller.getCurrX(), 0, 0);
-        
+
         requestAnimationFrame(() => {
             // this is here to work around a bug in FlatList, as discussed here
             // https://github.com/facebook/react-native/issues/1831
@@ -127,6 +128,9 @@ export default class ViewPager extends PureComponent {
         } else if (this.currentPage + 1 >= this.props.pageDataArray.length &&
             this.props.pageDataArray.length !== prevProps.pageDataArray.length) {
             this.scrollToPage(this.props.pageDataArray.length, true);
+        }
+        if (prevProps.initialPage !== this.props.initialPage) {
+            Platform.OS === 'android' && this.scroller.startScroll(this.scroller.getCurrX(), 0, this.getScrollOffsetOfPage(parseInt(this.props.initialPage)) - this.scroller.getCurrX(), 0, 400);
         }
     }
 
